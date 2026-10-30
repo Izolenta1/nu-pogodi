@@ -1,0 +1,1 @@
+export { GameConsole } from './ui/GameConsole';
