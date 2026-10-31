@@ -8,10 +8,10 @@ type AppLayoutProps = {
 
 export function AppLayout({ children }: AppLayoutProps) {
 	return (
-		<div className="w-full max-w-300 flex flex-col min-h-screen">
+		<div className="flex min-h-screen w-full max-w-300 flex-col">
 			<Header />
 
-			<main className="flex-1 flex flex-col min-h-0">{children}</main>
+			<main className="flex min-h-0 flex-1 flex-col">{children}</main>
 
 			<Footer />
 		</div>

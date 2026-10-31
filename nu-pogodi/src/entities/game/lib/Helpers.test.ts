@@ -77,7 +77,7 @@ describe('clearTimer', () => {
 
 		expect(clearTimer(null)).toBeNull();
 		expect(spy).toHaveBeenCalledTimes(1);
-		
+
 		spy.mockRestore();
 	});
 });

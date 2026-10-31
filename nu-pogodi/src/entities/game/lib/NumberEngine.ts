@@ -1,6 +1,6 @@
 import { setVisible, setVisibleAll, querySprites } from './Helpers';
 
-let digitSegments: Record<number, number[]> = {
+const digitSegments: Record<number, number[]> = {
 	0: [0, 1, 2, 4, 5, 6],
 	1: [2, 5],
 	2: [0, 2, 3, 4, 6],
@@ -42,7 +42,7 @@ class NumberEngine {
 		this.secondDigit = querySprites('number', { index: 1 });
 		this.thirdDigit = querySprites('number', { index: 2 });
 		this.fourthDigit = querySprites('number', { index: 3 });
-		
+
 		this.colon = querySprites('time', { index: 0 });
 		this.timePart = querySprites('time-part');
 

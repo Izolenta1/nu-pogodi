@@ -7,7 +7,14 @@ import { DIFFICULTY_CONFIG } from '../model/DifficultyConfig';
 import { GAME_CONFIG } from '../model/GameConfig';
 import { ANIMATION_CONFIG } from '../model/AnimationConfig';
 import { type DifficultyConfig } from '../model/DifficultyConfig';
-import { setVisible, setVisibleAll, querySprites, pickRandom, randomBetween, clearTimer } from './Helpers';
+import {
+	setVisible,
+	setVisibleAll,
+	querySprites,
+	pickRandom,
+	randomBetween,
+	clearTimer,
+} from './Helpers';
 import { playIfRunning, eggCatchSound, eggCrackSound } from './Sound';
 
 class GameEngine {
@@ -57,7 +64,7 @@ class GameEngine {
 
 		setVisibleAll(document.querySelectorAll<HTMLElement>('.game-segment'), false);
 
-        this.gameModeSprites = querySprites('game', { sortBy: 'index' });
+		this.gameModeSprites = querySprites('game', { sortBy: 'index' });
 
 		this.resultScreen = document.querySelector('[data-object="result-screen"]');
 		this.resultScreenTitle = document.querySelector('[data-object="result-screen-title"]');
@@ -104,11 +111,16 @@ class GameEngine {
 		const move = () => {
 			if (this.gameState !== 'idle') return;
 
-			const randomRoute = pickRandom(this.eggRoutes.filter((route) => route !== this.wolfPos));
+			const randomRoute = pickRandom(
+				this.eggRoutes.filter((route) => route !== this.wolfPos),
+			);
 
 			this.moveWolf(randomRoute);
 
-			this.idleWolfTimer = setTimeout(move, randomBetween(ANIMATION_CONFIG.idleWolfMinMs, ANIMATION_CONFIG.idleWolfMaxMs));
+			this.idleWolfTimer = setTimeout(
+				move,
+				randomBetween(ANIMATION_CONFIG.idleWolfMinMs, ANIMATION_CONFIG.idleWolfMaxMs),
+			);
 		};
 
 		move();
@@ -202,7 +214,9 @@ class GameEngine {
 		}
 
 		if (this.wolfPos === eggRoute) {
-			this.score += hareEngine.isHareActive() ? GAME_CONFIG.harePoints : GAME_CONFIG.pointsPerEgg;
+			this.score += hareEngine.isHareActive()
+				? GAME_CONFIG.harePoints
+				: GAME_CONFIG.pointsPerEgg;
 
 			playIfRunning(eggCatchSound);
 
@@ -280,7 +294,8 @@ class GameEngine {
 	private showResultScreen(isWin: boolean) {
 		this.resultScreen?.classList.toggle('hidden', false);
 		this.resultScreen?.classList.toggle('flex', true);
-		if (this.resultScreenTitle) this.resultScreenTitle.textContent = isWin ? 'ВЫ ПОБЕДИЛИ' : 'ВЫ ПРОИГРАЛИ';
+		if (this.resultScreenTitle)
+			this.resultScreenTitle.textContent = isWin ? 'ВЫ ПОБЕДИЛИ' : 'ВЫ ПРОИГРАЛИ';
 		if (this.resultScreenScore) this.resultScreenScore.textContent = this.score.toString();
 	}
 
@@ -302,7 +317,11 @@ class GameEngine {
 	}
 
 	isGameRunning() {
-		return this.gameState === 'startA' || this.gameState === 'startB' || this.gameState === 'animating';
+		return (
+			this.gameState === 'startA' ||
+			this.gameState === 'startB' ||
+			this.gameState === 'animating'
+		);
 	}
 }
 

@@ -1,1 +1,1 @@
-export { useGameKeyboard } from "./model/useGameKeyboard";
+export { useGameKeyboard } from './model/useGameKeyboard';

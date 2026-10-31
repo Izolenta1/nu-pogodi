@@ -9,7 +9,7 @@ class HareEngine {
 
 	// Игра
 	private hare: HTMLElement | null = null;
-    private isActive = false;
+	private isActive = false;
 
 	static getInstance() {
 		if (!HareEngine.instance) {
@@ -24,48 +24,48 @@ class HareEngine {
 
 		this.hare = querySprites('hare', { index: 0, variant: 0 })[0] ?? null;
 
-        setVisible(this.hare, false);
+		setVisible(this.hare, false);
 
-        this.initialized = true;
+		this.initialized = true;
 
-        this.scheduleSpawn();
+		this.scheduleSpawn();
 	}
 
-    private scheduleSpawn() {
+	private scheduleSpawn() {
 		const delay = randomBetween(HARE_CONFIG.spawnDelayMinMs, HARE_CONFIG.spawnDelayMaxMs);
 
 		setTimeout(() => {
 			this.showHare();
 		}, delay);
-    }
+	}
 
-    private showHare() {
-        if (!this.hare) return;
+	private showHare() {
+		if (!this.hare) return;
 
-        this.isActive = true;
+		this.isActive = true;
 
-        setVisible(this.hare, true);
+		setVisible(this.hare, true);
 
 		const duration = randomBetween(HARE_CONFIG.visibleMinMs, HARE_CONFIG.visibleMaxMs);
 
 		setTimeout(() => {
 			this.hideHare();
 		}, duration);
-    }
+	}
 
-    private hideHare() {
-        if (!this.hare) return;
+	private hideHare() {
+		if (!this.hare) return;
 
-        this.isActive = false;
+		this.isActive = false;
 
-        setVisible(this.hare, false);
+		setVisible(this.hare, false);
 
-        this.scheduleSpawn();
-    }
+		this.scheduleSpawn();
+	}
 
-    isHareActive() {
-        return this.isActive;
-    }
+	isHareActive() {
+		return this.isActive;
+	}
 }
 
 export const hareEngine = HareEngine.getInstance();
