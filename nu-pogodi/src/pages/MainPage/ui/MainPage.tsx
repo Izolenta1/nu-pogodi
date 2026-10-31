@@ -12,7 +12,7 @@ export function MainPage() {
 			<GameConsole />
 
 			<div className="font-manrope text-ink flex flex-col items-center gap-2 self-center">
-				<p>Управление с клавиатуры</p>
+				<p className="text-sm font-bold">УПРАВЛЕНИЕ С КЛАВИАТУРЫ</p>
 				<div className="flex items-center gap-2">
 					<div className="bg-paper flex aspect-square h-6 w-6 items-center justify-center rounded-sm shadow">
 						Q
