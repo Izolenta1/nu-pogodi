@@ -1,6 +1,7 @@
 import { type EggRoute } from "../model/types";
 import { setVisible, setVisibleAll, querySprites } from './Helpers';
 import { playIfRunning, eggRideSound } from './Sound';
+import { ANIMATION_CONFIG } from '../model/AnimationConfig';
 
 // Задержка
 function delay(ms: number): Promise<void> {
@@ -17,7 +18,6 @@ class MistakesEngine {
     private lifes: HTMLElement[] = [];
 	private leftFrames: HTMLElement[] = [];
 	private rightFrames: HTMLElement[] = [];
-	private readonly frameDuration = 500;
 
 	static getInstance() {
 		if (!MistakesEngine.instance) {
@@ -55,7 +55,7 @@ class MistakesEngine {
         setVisible(frames[0], true);
         setVisible(frames[1], true);
 
-        await delay(this.frameDuration);
+        await delay(ANIMATION_CONFIG.mistakeFrameMs);
 
         // Последовательно показываем кадры 2-5
         setVisible(frames[0], false);
@@ -65,7 +65,7 @@ class MistakesEngine {
 
 			playIfRunning(eggRideSound);
 
-            await delay(this.frameDuration);
+            await delay(ANIMATION_CONFIG.mistakeFrameMs);
 
             setVisible(frames[i], false);
         }

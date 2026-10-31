@@ -4,6 +4,8 @@ import { mistakesEngine } from './MistakesEngine';
 import { numberEngine } from './NumberEngine';
 import { hareEngine } from './HareEngine';
 import { DIFFICULTY_CONFIG } from '../model/DifficultyConfig';
+import { GAME_CONFIG } from '../model/GameConfig';
+import { ANIMATION_CONFIG } from '../model/AnimationConfig';
 import { type DifficultyConfig } from '../model/DifficultyConfig';
 import { setVisible, setVisibleAll, querySprites, pickRandom, randomBetween, clearTimer } from './Helpers';
 import { playIfRunning, eggCatchSound, eggCrackSound } from './Sound';
@@ -33,7 +35,6 @@ class GameEngine {
 	// Idle состояние
 	private idleTimeTimer: ReturnType<typeof setInterval> | null = null;
 	private idleWolfTimer: ReturnType<typeof setInterval> | null = null;
-	private readonly idleWolfDuration = 1500;
 
 	// Спрайты
 	private gameModeSprites: HTMLElement[] = [];
@@ -107,7 +108,7 @@ class GameEngine {
 
 			this.moveWolf(randomRoute);
 
-			this.idleWolfTimer = setTimeout(move, randomBetween(this.idleWolfDuration, this.idleWolfDuration + 1500));
+			this.idleWolfTimer = setTimeout(move, randomBetween(ANIMATION_CONFIG.idleWolfMinMs, ANIMATION_CONFIG.idleWolfMaxMs));
 		};
 
 		move();
@@ -201,7 +202,7 @@ class GameEngine {
 		}
 
 		if (this.wolfPos === eggRoute) {
-			this.score += hareEngine.isHareActive() ? 2 : 1;
+			this.score += hareEngine.isHareActive() ? GAME_CONFIG.harePoints : GAME_CONFIG.pointsPerEgg;
 
 			playIfRunning(eggCatchSound);
 
@@ -209,7 +210,7 @@ class GameEngine {
 
 			this.updateDifficulty();
 
-			if (this.score >= 1000) {
+			if (this.score >= GAME_CONFIG.winScore) {
 				this.gameState = 'over';
 				this.clearEggs();
 				this.pauseSpawn();
@@ -231,7 +232,7 @@ class GameEngine {
 		await mistakesEngine.countMistake(this.mistakes, eggRoute);
 		this.gameState = savedState;
 
-		if (this.mistakes <= 3) {
+		if (this.mistakes <= GAME_CONFIG.maxMistakes) {
 			this.resumeSpawn();
 			return false;
 		}

@@ -1,4 +1,5 @@
 import { setVisible, querySprites, randomBetween } from './Helpers';
+import { HARE_CONFIG } from '../model/HareConfig';
 
 class HareEngine {
 	// База движка
@@ -9,12 +10,6 @@ class HareEngine {
 	// Игра
 	private hare: HTMLElement | null = null;
     private isActive = false;
-
-    private readonly minSpawnDelay = 20_000;
-    private readonly maxSpawnDelay = 30_000;
-
-    private readonly minVisibleDuration = 5_000;
-    private readonly maxVisibleDuration = 10_000;
 
 	static getInstance() {
 		if (!HareEngine.instance) {
@@ -37,7 +32,7 @@ class HareEngine {
 	}
 
     private scheduleSpawn() {
-		const delay = randomBetween(this.minSpawnDelay, this.maxSpawnDelay);
+		const delay = randomBetween(HARE_CONFIG.spawnDelayMinMs, HARE_CONFIG.spawnDelayMaxMs);
 
 		setTimeout(() => {
 			this.showHare();
@@ -51,7 +46,7 @@ class HareEngine {
 
         setVisible(this.hare, true);
 
-		const duration = randomBetween(this.minVisibleDuration, this.maxVisibleDuration);
+		const duration = randomBetween(HARE_CONFIG.visibleMinMs, HARE_CONFIG.visibleMaxMs);
 
 		setTimeout(() => {
 			this.hideHare();
