@@ -1,18 +1,11 @@
 import { type EggRoute } from "../model/types";
-import { gameEngine } from "./GameEngine";
+import { setVisible, setVisibleAll, querySprites } from './Helpers';
+import { playIfRunning, eggRideSound } from './Sound';
 
 // Задержка
 function delay(ms: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-// Переключение видимости
-function setVisibility(el: HTMLElement, visible: boolean) {
-	el.classList.toggle('is-hidden', !visible);
-	el.classList.toggle('is-visible', visible);
-}
-
-const eggRideSound = new Audio('/sounds/egg_ride.ogg');
 
 class MistakesEngine {
 	// База движка
@@ -39,36 +32,14 @@ class MistakesEngine {
 
 		this.initialized = true;
 
-        this.lifes = Array.from(
-            document.querySelectorAll<HTMLElement>(
-                '[data-object="life"]'
-            )
-        ).sort((a, b) => {
-			return Number(a.dataset.variant) - Number(b.dataset.variant);
-		});
-
-        this.leftFrames = Array.from(
-            document.querySelectorAll<HTMLElement>(
-                '[data-object="chicken"][data-index="0"]'
-            )
-        ).sort((a, b) => {
-			return Number(a.dataset.variant) - Number(b.dataset.variant);
-		});
-
-        this.rightFrames = Array.from(
-            document.querySelectorAll<HTMLElement>(
-                '[data-object="chicken"][data-index="1"]'
-            )
-        ).sort((a, b) => {
-			return Number(a.dataset.variant) - Number(b.dataset.variant);
-		});
+        this.lifes = querySprites('life');
+		this.leftFrames = querySprites('chicken', { index: 0 });
+		this.rightFrames = querySprites('chicken', { index: 1 });
 	}
 
     // Скрытие всех кадров
     private clearFrames() {
-        [...this.leftFrames, ...this.rightFrames].forEach(el => {
-            setVisibility(el, false);
-        });
+        setVisibleAll([...this.leftFrames, ...this.rightFrames], false);
     }
 
     // Анимация цыпленка
@@ -81,33 +52,33 @@ class MistakesEngine {
         this.clearFrames();
 
         // Показываем первые два кадра
-        setVisibility(frames[0], true);
-        setVisibility(frames[1], true);
+        setVisible(frames[0], true);
+        setVisible(frames[1], true);
 
         await delay(this.frameDuration);
 
         // Последовательно показываем кадры 2-5
-        setVisibility(frames[0], false);
+        setVisible(frames[0], false);
 
         for (let i = 2; i <= 5; i++) {
-            setVisibility(frames[i], true);
+            setVisible(frames[i], true);
 
-			if (gameEngine.isGameRunning()) eggRideSound.play();
+			playIfRunning(eggRideSound);
 
             await delay(this.frameDuration);
 
-            setVisibility(frames[i], false);
+            setVisible(frames[i], false);
         }
 
         // Скрываем оставшийся первый кадр (variant 1)
-        setVisibility(frames[1], false);
+        setVisible(frames[1], false);
     }
 
     private showLifes(lifes: number) {
         const count = Math.max(0, Math.min(lifes, this.lifes.length));
 
         this.lifes.forEach((el, index) => {
-            setVisibility(el, index < count);
+            setVisible(el, index < count);
         });
     }
 
@@ -118,9 +89,7 @@ class MistakesEngine {
 	}
 	
 	clearLifes() {
-        this.lifes.forEach(el => {
-            setVisibility(el, false);
-        });
+        setVisibleAll(this.lifes, false);
 	}
 }
 

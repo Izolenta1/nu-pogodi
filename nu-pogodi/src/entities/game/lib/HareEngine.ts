@@ -1,3 +1,5 @@
+import { setVisible, querySprites, randomBetween } from './Helpers';
+
 class HareEngine {
 	// База движка
 	private static instance: HareEngine;
@@ -7,9 +9,6 @@ class HareEngine {
 	// Игра
 	private hare: HTMLElement | null = null;
     private isActive = false;
-
-    private spawnTimer: ReturnType<typeof setTimeout> | null = null;
-    private hideTimer: ReturnType<typeof setTimeout> | null = null;
 
     private readonly minSpawnDelay = 20_000;
     private readonly maxSpawnDelay = 30_000;
@@ -28,29 +27,21 @@ class HareEngine {
 	init() {
 		if (this.initialized) return;
 
-		this.hare = document.querySelector('[data-object="hare"][data-index="0"][data-variant="0"]');
+		this.hare = querySprites('hare', { index: 0, variant: 0 })[0] ?? null;
 
-        this.hare?.classList.add('is-hidden');
-        this.hare?.classList.remove('is-visible');
+        setVisible(this.hare, false);
 
         this.initialized = true;
 
         this.scheduleSpawn();
 	}
 
-    private getRandomDuration(min: number, max: number) {
-        return min + Math.random() * (max - min);
-    }
-
     private scheduleSpawn() {
-        const delay = this.getRandomDuration(
-            this.minSpawnDelay,
-            this.maxSpawnDelay
-        );
+		const delay = randomBetween(this.minSpawnDelay, this.maxSpawnDelay);
 
-        this.spawnTimer = setTimeout(() => {
-            this.showHare();
-        }, delay);
+		setTimeout(() => {
+			this.showHare();
+		}, delay);
     }
 
     private showHare() {
@@ -58,17 +49,13 @@ class HareEngine {
 
         this.isActive = true;
 
-        this.hare.classList.remove('is-hidden');
-        this.hare.classList.add('is-visible');
+        setVisible(this.hare, true);
 
-        const duration = this.getRandomDuration(
-            this.minVisibleDuration,
-            this.maxVisibleDuration
-        );
+		const duration = randomBetween(this.minVisibleDuration, this.maxVisibleDuration);
 
-        this.hideTimer = setTimeout(() => {
-            this.hideHare();
-        }, duration);
+		setTimeout(() => {
+			this.hideHare();
+		}, duration);
     }
 
     private hideHare() {
@@ -76,8 +63,7 @@ class HareEngine {
 
         this.isActive = false;
 
-        this.hare.classList.remove('is-visible');
-        this.hare.classList.add('is-hidden');
+        setVisible(this.hare, false);
 
         this.scheduleSpawn();
     }

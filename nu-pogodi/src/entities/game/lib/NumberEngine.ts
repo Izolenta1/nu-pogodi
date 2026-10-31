@@ -1,3 +1,5 @@
+import { setVisible, setVisibleAll, querySprites } from './Helpers';
+
 let digitSegments: Record<number, number[]> = {
 	0: [0, 1, 2, 4, 5, 6],
 	1: [2, 5],
@@ -10,18 +12,6 @@ let digitSegments: Record<number, number[]> = {
 	8: [0, 1, 2, 3, 4, 5, 6],
 	9: [0, 1, 2, 3, 5, 6],
 };
-
-// Переключение видимости
-function toggleElement(element: HTMLElement, visible: boolean) {
-	element.classList.toggle('is-hidden', !visible);
-	element.classList.toggle('is-visible', visible);
-}
-
-function toggleElements(elements: HTMLElement[], visible: boolean) {
-	elements.forEach((element) => {
-		toggleElement(element, visible);
-	});
-}
 
 class NumberEngine {
 	// База движка
@@ -48,26 +38,15 @@ class NumberEngine {
 	init() {
 		if (this.initialized) return;
 
-		this.firstDigit = this.getElements('number', 0);
-		this.secondDigit = this.getElements('number', 1);
-		this.thirdDigit = this.getElements('number', 2);
-		this.fourthDigit = this.getElements('number', 3);
-
-		this.colon = this.getElements('time', 0);
-		this.timePart = this.getElements('time-part');
+		this.firstDigit = querySprites('number', { index: 0 });
+		this.secondDigit = querySprites('number', { index: 1 });
+		this.thirdDigit = querySprites('number', { index: 2 });
+		this.fourthDigit = querySprites('number', { index: 3 });
+		
+		this.colon = querySprites('time', { index: 0 });
+		this.timePart = querySprites('time-part');
 
 		this.initialized = true;
-	}
-
-	private getElements(object: string, index?: number): HTMLElement[] {
-		const selector =
-			index === undefined
-				? `[data-object="${object}"]`
-				: `[data-object="${object}"][data-index="${index}"]`;
-
-		return Array.from(document.querySelectorAll<HTMLElement>(selector)).sort((a, b) => {
-			return Number(a.dataset.variant) - Number(b.dataset.variant);
-		});
 	}
 
 	// Отображение одной цифры
@@ -75,7 +54,7 @@ class NumberEngine {
 		const segments = digitSegments[digit] ?? [];
 
 		elements.forEach((element) => {
-			toggleElement(element, segments.includes(Number(element.dataset.variant)));
+			setVisible(element, segments.includes(Number(element.dataset.variant)));
 		});
 	}
 
@@ -92,7 +71,7 @@ class NumberEngine {
 
 		// Скрываем все цифры
 		elements.forEach((digit) => {
-			toggleElements(digit, false);
+			setVisibleAll(digit, false);
 		});
 
 		// Отображаем только задействованные разряды
@@ -109,11 +88,11 @@ class NumberEngine {
 		if (!this.initialized) this.init();
 
 		// Скрываем двоеточие и обозначение времени
-		toggleElements(this.colon, false);
-		toggleElements(this.timePart, false);
+		setVisibleAll(this.colon, false);
+		setVisibleAll(this.timePart, false);
 
 		// Первая цифра всегда единица
-		toggleElements(this.firstDigit, true);
+		setVisibleAll(this.firstDigit, true);
 
 		// Показываем счет
 		this.showNumber(score);
@@ -142,21 +121,21 @@ class NumberEngine {
 		];
 
 		// Отображаем часы и минуты
-		toggleElements(this.firstDigit, digits[0] === 1);
+		setVisibleAll(this.firstDigit, digits[0] === 1);
 
 		this.showDigit(this.secondDigit, digits[1]);
 		this.showDigit(this.thirdDigit, digits[2]);
 		this.showDigit(this.fourthDigit, digits[3]);
 
 		// Показываем двоеточие
-		toggleElements(this.colon, true);
+		setVisibleAll(this.colon, true);
 
 		// Показываем AM / PM
-		toggleElements(this.timePart, true);
+		setVisibleAll(this.timePart, true);
 
 		// Индекс 0 — AM, индекс 1 — PM
-		toggleElement(this.timePart[0], !isPM);
-		toggleElement(this.timePart[1], isPM);
+		setVisible(this.timePart[0], !isPM);
+		setVisible(this.timePart[1], isPM);
 	}
 }
 

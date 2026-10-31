@@ -5,9 +5,8 @@ import { numberEngine } from './NumberEngine';
 import { hareEngine } from './HareEngine';
 import { DIFFICULTY_CONFIG } from '../model/DifficultyConfig';
 import { type DifficultyConfig } from '../model/DifficultyConfig';
-
-const eggCatchSound = new Audio('/sounds/egg_catch.ogg');
-const eggCrackSound = new Audio('/sounds/egg_crack.ogg');
+import { setVisible, setVisibleAll, querySprites, pickRandom, randomBetween, clearTimer } from './Helpers';
+import { playIfRunning, eggCatchSound, eggCrackSound } from './Sound';
 
 class GameEngine {
 	// База движка
@@ -55,18 +54,9 @@ class GameEngine {
 
 		this.initialized = true;
 
-		document.querySelectorAll('.game-segment').forEach((el) => {
-			el.classList.toggle('is-hidden', true);
-			el.classList.toggle('is-visible', false);
-		});
+		setVisibleAll(document.querySelectorAll<HTMLElement>('.game-segment'), false);
 
-        this.gameModeSprites = Array.from(
-            document.querySelectorAll<HTMLElement>(
-                '[data-object="game"]'
-            )
-        ).sort((a, b) => {
-			return Number(a.dataset.index) - Number(b.dataset.index);
-		});
+        this.gameModeSprites = querySprites('game', { sortBy: 'index' });
 
 		this.resultScreen = document.querySelector('[data-object="result-screen"]');
 		this.resultScreenTitle = document.querySelector('[data-object="result-screen-title"]');
@@ -85,10 +75,7 @@ class GameEngine {
 		this.resetGame();
 
 		this.gameState = 'idle';
-		this.gameModeSprites.forEach((sprite) => {
-			sprite.classList.toggle('is-hidden', true);
-			sprite.classList.toggle('is-visible', false);
-		});
+		setVisibleAll(this.gameModeSprites, false);
 
 		this.score = 0;
 		this.mistakes = 0;
@@ -116,40 +103,25 @@ class GameEngine {
 		const move = () => {
 			if (this.gameState !== 'idle') return;
 
-			const availableRoutes = this.eggRoutes.filter((route) => route !== this.wolfPos);
-
-			const randomRoute = availableRoutes[Math.floor(Math.random() * availableRoutes.length)];
+			const randomRoute = pickRandom(this.eggRoutes.filter((route) => route !== this.wolfPos));
 
 			this.moveWolf(randomRoute);
 
-			this.idleWolfTimer = setTimeout(move, this.idleWolfDuration + Math.random() * 1500);
+			this.idleWolfTimer = setTimeout(move, randomBetween(this.idleWolfDuration, this.idleWolfDuration + 1500));
 		};
 
 		move();
 	}
 
 	private stopIdleTimers() {
-		if (this.idleTimeTimer !== null) {
-			clearInterval(this.idleTimeTimer);
-			this.idleTimeTimer = null;
-		}
-
-		if (this.idleWolfTimer !== null) {
-			clearTimeout(this.idleWolfTimer);
-			this.idleWolfTimer = null;
-		}
-	}
-
-	private getRandomRoute(): EggRoute {
-		const availableRoutes = this.eggRoutes.filter((route) => route !== this.lastSpawnRoute);
-
-		return availableRoutes[Math.floor(Math.random() * availableRoutes.length)];
+		this.idleTimeTimer = clearTimer(this.idleTimeTimer);
+		this.idleWolfTimer = clearTimer(this.idleWolfTimer);
 	}
 
 	private spawnEgg = () => {
 		if (this.isPaused) return;
 
-		const route = this.getRandomRoute();
+		const route = pickRandom(this.eggRoutes.filter((route) => route !== this.lastSpawnRoute));
 		const difficulty = this.getDifficulty();
 
 		this.lastSpawnRoute = route;
@@ -162,10 +134,7 @@ class GameEngine {
 	private pauseSpawn() {
 		this.isPaused = true;
 
-		if (this.spawnTimer !== null) {
-			clearTimeout(this.spawnTimer);
-			this.spawnTimer = null;
-		}
+		this.spawnTimer = clearTimer(this.spawnTimer);
 	}
 
 	private resumeSpawn() {
@@ -218,19 +187,10 @@ class GameEngine {
 		const basketVariant = pos.endsWith('Up') ? 1 : 2;
 		const variantsToShow = [0, basketVariant];
 
-		document.querySelectorAll('[data-object="wolf"]').forEach((el) => {
-			el.classList.toggle('is-hidden', true);
-			el.classList.toggle('is-visible', false);
-		});
+		setVisibleAll(document.querySelectorAll<HTMLElement>('[data-object="wolf"]'), false);
 
 		for (const variant of variantsToShow) {
-			const target = document.querySelector(
-				`[data-object="wolf"][data-index="${sideIndex}"][data-variant="${variant}"]`,
-			);
-			if (target) {
-				target.classList.toggle('is-hidden', false);
-				target.classList.toggle('is-visible', true);
-			}
+			setVisible(querySprites('wolf', { index: sideIndex, variant })[0], true);
 		}
 	}
 
@@ -243,7 +203,7 @@ class GameEngine {
 		if (this.wolfPos === eggRoute) {
 			this.score += hareEngine.isHareActive() ? 2 : 1;
 
-			if (this.isGameRunning()) eggCatchSound.play();
+			playIfRunning(eggCatchSound);
 
 			numberEngine.showScore(this.score);
 
@@ -262,7 +222,7 @@ class GameEngine {
 
 		this.mistakes++;
 
-		if (this.isGameRunning()) eggCrackSound.play();
+		playIfRunning(eggCrackSound);
 
 		this.clearEggs();
 		this.pauseSpawn();
@@ -303,10 +263,7 @@ class GameEngine {
 	private updateDifficulty() {
 		if (![50, 100, 150].includes(this.score)) return;
 
-		if (this.spawnTimer !== null) {
-			clearTimeout(this.spawnTimer);
-			this.spawnTimer = null;
-		}
+		this.spawnTimer = clearTimer(this.spawnTimer);
 
 		if (!this.isPaused) {
 			this.spawnTimer = setTimeout(this.spawnEgg, this.getDifficulty().spawnDuration);
@@ -315,10 +272,7 @@ class GameEngine {
 
 	private showGameMode(mode: 0 | 1) {
 		this.gameModeSprites.forEach((sprite, index) => {
-			const isActive = index === mode;
-	
-			sprite.classList.toggle('is-hidden', !isActive);
-			sprite.classList.toggle('is-visible', isActive);
+			setVisible(sprite, index === mode);
 		});
 	}
 
