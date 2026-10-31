@@ -1,0 +1,1 @@
+export type EggRoute = 'leftUp' | 'leftDown' | 'rightUp' | 'rightDown';

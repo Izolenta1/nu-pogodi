@@ -1,0 +1,1 @@
+export { gameEngine } from './lib/GameEngine';

@@ -1,9 +1,10 @@
-import { GameConsole } from '@/widgets/GameConsole';
+import { AppLayout } from './layouts/AppLayout';
+import { MainPage } from '@/pages/MainPage';
 
 export function App() {
 	return (
-		<main className="flex flex-col items-center justify-center">
-			<GameConsole />
-		</main>
+		<AppLayout>
+			<MainPage />
+		</AppLayout>
 	);
 }

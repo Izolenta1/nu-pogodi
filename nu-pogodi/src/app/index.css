@@ -1,1 +1,38 @@
 @import 'tailwindcss';
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+:root {
+	--bg: #f6f3ee;
+	--paper: #fffcf7;
+	--ink: #202326;
+}
+
+@theme {
+	--color-bg: var(--bg);
+	--color-paper: var(--paper);
+	--color-ink: var(--ink);
+	
+	--font-manrope: 'Manrope', sans-serif;
+	--font-pixel: 'Pixel', sans-serif;
+}
+
+@font-face {
+	font-family: 'Manrope';
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url('/fonts/Manrope.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Pixel';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('/fonts/Pixel.woff2') format('woff2');
+}
