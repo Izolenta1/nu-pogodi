@@ -4,10 +4,9 @@
 
 ## Запуск
 
-Нужны [Node.js](https://nodejs.org/) и npm. Команды выполняются из каталога приложения:
+Нужны [Node.js](https://nodejs.org/) и npm. Из корня репозитория:
 
 ```bash
-cd nu-pogodi
 npm install
 npm run start
 ```
